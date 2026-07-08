@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সপ্তম শ্রেণি আইসিটি কুইজ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f0f4f8; }
+        .glass-morphism { background: rgba(255, 255, 255, 0.95); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="max-w-2xl w-full glass-morphism p-6 md:p-8 transition-all duration-500">
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center">
+            <h1 class="text-3xl font-bold text-blue-700 mb-4">আইসিটি অনলাইন কুইজ - ২০২৪</h1>
+            <p class="text-gray-600 mb-6">শ্রেণি: সপ্তম | মোট প্রশ্ন: ৫০ | সময়: ২০ মিনিট</p>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 text-left">
+                <p class="text-sm text-blue-800">
+                    <strong>নির্দেশনা:</strong> <br>
+                    ১. প্রতিটি প্রশ্নের মান ১ নম্বর। <br>
+                    ২. ২০ মিনিট শেষ হলে পরীক্ষা স্বয়ংক্রিয়ভাবে জমা হয়ে যাবে। <br>
+                    ৩. এই প্রশ্নগুলো 1000061426.jpg থেকে 1000061434.jpg পর্যন্ত ফাইলগুলো থেকে নেওয়া হয়েছে।
+                </p>
+            </div>
+            <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full transition duration-300 transform hover:scale-105">
+                কুইজ শুরু করুন
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-sm font-semibold text-gray-500">প্রশ্ন: <span id="current-count">1</span>/50</div>
+                <div id="timer" class="text-xl font-bold text-red-600 bg-red-50 px-4 py-1 rounded-lg">20:00</div>
+            </div>
+            
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+                <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 2%"></div>
+            </div>
+
+            <h2 id="question-text" class="text-xl font-semibold text-gray-800 mb-6"></h2>
+
+            <div id="options-container" class="space-y-3">
+                <!-- Options will be injected here -->
+            </div>
+
+            <div class="mt-8 flex justify-between">
+                <button id="prev-btn" onclick="prevQuestion()" class="invisible text-blue-600 font-semibold py-2 px-4 rounded hover:bg-blue-50">পূর্ববর্তী</button>
+                <button id="next-btn" onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded-lg shadow-md transition">পরবর্তী</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">ফলাফল</h2>
+            <div class="text-6xl font-bold text-blue-600 my-6" id="final-score">0/50</div>
+            <p id="feedback-text" class="text-lg text-gray-600 mb-8"></p>
+            <div class="bg-gray-50 rounded-xl p-4 mb-8 text-left space-y-2">
+                <p>✅ সঠিক উত্তর: <span id="correct-answers" class="font-bold text-green-600">0</span></p>
+                <p>❌ ভুল উত্তর: <span id="wrong-answers" class="font-bold text-red-600">0</span></p>
+                <p>⏱️ ব্যবহৃত সময়: <span id="time-taken" class="font-bold">0</span> মিনিট</p>
+            </div>
+            <button onclick="location.reload()" class="bg-gray-800 hover:bg-black text-white font-bold py-3 px-8 rounded-full transition">আবার চেষ্টা করুন</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "তথ্য ও যোগাযোগ প্রযুক্তি আসলে কী?", o: ["এক ধরনের বিনোদন", "এক ধরনের পত্রিকা", "এক ধরনের প্রযুক্তি", "এক ধরনের চ্যাটিং"], a: 2 },
+            { q: "ব্যক্তিগত যোগাযোগের উদাহরণ কোনটি?", o: ["মোবাইল", "রেডিও", "টেলিভিশন", "কম্পিউটার"], a: 0 },
+            { q: "PC এর পূর্ণরূপ কী?", o: ["Private Computer", "Personal Computer", "Picture Computer", "Public Computer"], a: 1 },
+            { q: "GPS-এর পূর্ণরূপ কী?", o: ["Global Positioning System", "Generation Pocket Service", "Gentel Pocket Service", "General Pocket Socket"], a: 0 },
+            { q: "গাড়ি চালিয়ে কোথাও যাওয়ার প্রথম শর্ত কী?", o: ["জায়গা চিনতে হবে", "গাড়ি পরিষ্কার করতে হবে", "পথঘাট চিনতে হবে", "জিপিএস থাকতে হবে"], a: 2 },
+            { q: "পৃথিবীকে ঘিরে কী ঘুরছে?", o: ["গ্রহ", "উপগ্রহ", "চাঁদ", "সূর্য"], a: 1 },
+            { q: "জিপিএস কাকে সংকেত পাঠায়?", o: ["চাঁদকে", "মঙ্গল গ্রহকে", "কৃত্রিম উপগ্রহকে", "বুধ গ্রহকে"], a: 2 },
+            { q: "বাংলাদেশ স্যাটেলাইট-১ কত তারিখে মহাকাশে উৎক্ষেপণ করা হয়?", o: ["১২ মে ২০১৮", "১২ মে ২০১৭", "১২ মার্চ ২০১৮", "১৫ মে ২০১৭"], a: 0 },
+            { q: "টেলিফোন ব্যবহারের ফলে কোনটি সাশ্রয় হয়?", o: ["সময়", "শ্রম", "টাকা", "সবগুলো"], a: 3 },
+            { q: "ই-মেইল এর পূর্ণরূপ কী?", o: ["ইলেকট্রিক্যাল মেইল", "ইলেকট্রন মেইল", "ইলেকট্রনিক মেইল", "ইলেকট্রনিক্স মেইল"], a: 2 },
+            { q: "ই-বুক হলো—", o: ["ইলেকট্রনিক বুক", "ইলেকট্রনিক ফাইল", "ইলেকশন বুক", "ইলেকট্রন বুক"], a: 0 },
+            { q: "কাগজবিহীন ভর্তি প্রক্রিয়া প্রথম শুরু হয় কোন বিশ্ববিদ্যালয়ে?", o: ["ঢাকা বিশ্ববিদ্যালয়", "শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয়", "রাজশাহী বিশ্ববিদ্যালয়", "চট্টগ্রাম বিশ্ববিদ্যালয়"], a: 1 },
+            { q: "কাগজবিহীন ভর্তি প্রক্রিয়া কবে শুরু হয়?", o: ["২০ আগস্ট ২০০৯", "২১ আগস্ট ২০০৯", "২০ আগস্ট ২০০৮", "২১ আগস্ট ২০০৮"], a: 1 },
+            { q: "কাগজ তৈরি হয় কোনটি থেকে?", o: ["পাথর", "গাছ", "মাটি", "বালি"], a: 1 },
+            { q: "অনলাইন ব্যাংকিংয়ের সুবিধা কোনটি?", o: ["ঘরে বসে ব্যালেন্স চেক করা", "টাকা তোলা", "টাকা জমা দেওয়া", "সবগুলো"], a: 0 },
+            { q: "ভার্চুয়াল অফিসের বড় সুবিধা কোনটি?", o: ["সশরীরে উপস্থিত থাকতে হয় না", "অফিসে বসে থাকা যায়", "সারাদিন কাজ করা যায়", "বেতন বেশি পাওয়া যায়"], a: 0 },
+            { q: "অফিসে না এসে কাজ করাকে কী বলে?", o: ["হোম অফিস", "ভার্চুয়াল অফিস", "ম্যানেজমেন্ট অফিস", "পার্সোনাল অফিস"], a: 1 },
+            { q: "আউটসোর্সিং কী?", o: ["ইন্টারনেটের মাধ্যমে বাইরের কাজ করা", "অফিসে কাজ করা", "কেনাকাটা করা", "খেলার মাঠ"], a: 0 },
+            { q: "ড্রোনের শাব্দিক অর্থ কী?", o: ["পাখি", "মৌমাছি", "বিমান", "রকেট"], a: 1 },
+            { q: "এসএমএস (SMS) এর পূর্ণরূপ কী?", o: ["Short Message Service", "Short Mail Service", "Short Mail Storage", "Small Message System"], a: 0 },
+            { q: "উইকিপিডিয়া কী?", o: ["একটি মুক্ত বিশ্বকোষ", "একটি সংবাদপত্র", "একটি ডাটাবেজ", "একটি স্মার্টফোন"], a: 0 },
+            { q: "ই-চিকিৎসা কেন্দ্র থেকে কিসের খোঁজ নেওয়া হয়?", o: ["শিক্ষকের", "ডাক্তারের", "চাকরির", "বইয়ের"], a: 1 },
+            { q: "ভার্চুয়াল অফিসের ফলে কোনটি সাশ্রয় হয়?", o: ["সময়", "জায়গা", "টাকা", "সবগুলো"], a: 3 },
+            { q: "রোবট কখনো কী হয় না?", o: ["ক্লান্ত", "যান্ত্রিক", "ক্ষতিগ্রস্ত", "একঘেয়ে"], a: 0 },
+            { q: "শিল্প কারখানার বিপজ্জনক কাজগুলো এখন কার মাধ্যমে করা হয়?", o: ["মানুষ", "রোবট", "প্রাণী", "যন্ত্র"], a: 1 },
+            { q: "পাইলটবিহীন বিমানকে কী বলা হয়?", o: ["ড্রোন", "জেট", "হেলিকপ্টার", "বেলুন"], a: 0 },
+            { q: "সবচেয়ে বড় ও জনপ্রিয় সামাজিক যোগাযোগ মাধ্যম কোনটি?", o: ["টুইটার", "ইনস্টাগ্রাম", "ফেসবুক", "ইউটিউব"], a: 2 },
+            { q: "ফেসবুকের প্রতিষ্ঠাতা কে?", o: ["স্টিভ জবস", "মার্ক জুকারবার্গ", "বিল গেটস", "জেফ বেজোস"], a: 1 },
+            { q: "ই-কার্ড পাঠানোর সুবিধা কী?", o: ["সময় ও অর্থ সাশ্রয়", "খুবই দামি", "পাওয়া যায় না", "কঠিন কাজ"], a: 0 },
+            { q: "তথ্য ও যোগাযোগ প্রযুক্তির কল্যাণে কোনটি সম্ভব?", o: ["ভার্চুয়াল অফিস", "কল সেন্টার", "কাগজবিহীন অফিস", "সবগুলো"], a: 3 },
+            { q: "ঘরে বসে টাকা আয় করার পদ্ধতিকে কী বলে?", o: ["আউটসোর্সিং", "ব্যাংকিং", "চাকরি", "ভ্রমণ"], a: 0 },
+            { q: "ভিডিও শেয়ারিং সাইট কোনটি?", o: ["গুগল", "ফেসবুক", "ইউটিউব", "টুইটার"], a: 2 },
+            { q: "সার্চ ইঞ্জিন কোনটি?", o: ["ফেসবুক", "গুগল", "স্কাইপি", "ভাইবার"], a: 1 },
+            { q: "বিপজ্জনক যান্ত্রিক কাজগুলোতে কী ব্যবহার করা হয়?", o: ["ইন্ডাস্ট্রিয়াল রোবট", "সাধারণ রোবট", "খেলনা রোবট", "গৃহপালিত পশু"], a: 0 },
+            { q: "অফিসের কাজ বাড়িতে বসে করার প্রযুক্তিকে কী বলে?", o: ["স্মার্ট অফিস", "ভার্চুয়াল অফিস", "প্রাইভেট অফিস", "কোনটিই নয়"], a: 1 },
+            { q: "ই-মেইল পাঠানোর জন্য কোনটি প্রয়োজন?", o: ["ইন্টারনেট সংযোগ", "বই", "টাকা", "খাতা"], a: 0 },
+            { q: "কোনটি আধুনিক যোগাযোগের মাধ্যম?", o: ["চিঠি", "টেলিগ্রাম", "ই-মেইল", "কবুতর"], a: 2 },
+            { q: "কম্পিউটার নেটওয়ার্ক ব্যবহার করে চিঠি পাঠানোকে কী বলে?", o: ["এসএমএস", "ই-মেইল", "চ্যাটিং", "কলিং"], a: 1 },
+            { q: "কাগজের বদলে তথ্য কোথায় জমা রাখা যায়?", o: ["বাতাসে", "পকেটে", "ডিজিটাল ডাটাবেজে", "গাছের বাকলে"], a: 2 },
+            { q: "তথ্য প্রযুক্তি ব্যবহারের ফলে মানুষের কর্মদক্ষতা-", o: ["কমেছে", "বেড়েছে", "স্থির আছে", "অপ্রয়োজনীয়"], a: 1 },
+            { q: "টেলিমেডিসিন সেবা কিসের সাহায্যে পাওয়া যায়?", o: ["আইসিটি", "গাড়ি", "খেলার মাঠ", "লাইব্রেরি"], a: 0 },
+            { q: "টুইটার কী ধরনের সাইট?", o: ["মাইক্রোব্লগিং", "সার্চ ইঞ্জিন", "ই-কমার্স", "ব্যাংকিং"], a: 0 },
+            { q: "তথ্য বিনিময়ের একটি মাধ্যম হলো—", o: ["ইন্টারনেট", "পাথর", "দেওয়াল", "মাটি"], a: 0 },
+            { q: "কম্পিউটারের প্রধান যন্ত্রাংশ কোনটি?", o: ["প্রসেসর", "মাউস", "কীবোর্ড", "মনিটর"], a: 0 },
+            { q: "মোবাইল ফোনের মাধ্যমে টাকা পাঠানোকে কী বলে?", o: ["ই-ক্যাশ", "এম-ব্যাংকিং", "ই-মেইল", "ই-কমার্স"], a: 1 },
+            { q: "গুগল ড্রাইভ (Google Drive) কিসের জন্য ব্যবহৃত হয়?", o: ["ছবি তোলা", "ফাইল সংরক্ষণ", "রান্না করা", "ভিডিও দেখা"], a: 1 },
+            { q: "কোনটি ছাড়াই ই-মেইল পাঠানো সম্ভব?", o: ["স্মার্টফোন", "খাতা-কলম", "ইন্টারনেট", "ইউজার আইডি"], a: 1 },
+            { q: "আইসিটি শিক্ষায় কোনটি বেশি জরুরি?", o: ["মুখস্থ করা", "ব্যবহারিক জ্ঞান", "বই পড়া", "ছবি আঁকা"], a: 1 },
+            { q: "ইন্টারনেটে তথ্যের মহাসমুদ্রকে কী বলা হয়?", o: ["ইউটিউব", "তথ্য ভাণ্ডার", "ডব্লিউ ডব্লিউ ডব্লিউ", "ফাইল"], a: 2 },
+            { q: "ভবিষ্যৎ প্রজন্ম কিসের ওপর নির্ভরশীল হবে?", o: ["কাগজ", "তথ্য প্রযুক্তি", "শারীরিক শক্তি", "পশু"], a: 1 }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 1200; // 20 minutes in seconds
+        let userAnswers = new Array(questions.length).fill(null);
+        let timerInterval;
+
+        function startQuiz() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+            startTimer();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('question-text').innerText = `${currentQuestion + 1}. ${q.q}`;
+            document.getElementById('current-count').innerText = currentQuestion + 1;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            q.o.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-4 rounded-xl border-2 transition duration-200 ${userAnswers[currentQuestion] === index ? 'border-blue-600 bg-blue-50 shadow-sm' : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'}`;
+                btn.innerHTML = `<span class="inline-block w-8 h-8 bg-gray-100 rounded-full text-center leading-8 mr-3 font-bold">${String.fromCharCode(0x0995 + index)}</span> ${option}`;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Progress Bar
+            document.getElementById('progress-bar').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+            
+            // Prev Button visibility
+            document.getElementById('prev-btn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            
+            // Next/Submit button text
+            document.getElementById('next-btn').innerText = currentQuestion === questions.length - 1 ? 'সাবমিট করুন' : 'পরবর্তী';
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            showQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            score = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === questions[idx].a) score++;
+            });
+
+            document.getElementById('final-score').innerText = `${score}/50`;
+            document.getElementById('correct-answers').innerText = score;
+            document.getElementById('wrong-answers').innerText = 50 - score;
+            document.getElementById('time-taken').innerText = Math.floor((1200 - timeLeft) / 60);
+
+            let feedback = "";
+            if (score >= 45) feedback = "অসাধারণ! তুমি একজন আইসিটি এক্সপার্ট।";
+            else if (score >= 35) feedback = "খুব ভালো ফলাফল! আরও একটু চেষ্টা করলে পূর্ণ নম্বর পাবে।";
+            else if (score >= 25) feedback = "ভালো হয়েছে, তবে পাঠ্যবই আরও মনোযোগ দিয়ে পড়তে হবে।";
+            else feedback = "তোমাকে আরও অনেক পরিশ্রম করতে হবে। আবার চেষ্টা করো।";
+            
+            document.getElementById('feedback-text').innerText = feedback;
+        }
+    </script>
+</body>
+</html>
+```eof
+
+আমি এই কুইজটিতে আপনার প্রদত্ত ছবিগুলোর মূল বিষয়বস্তু যেমন— **ব্যক্তিগত যোগাযোগ, জিপিএস, বঙ্গবন্ধু স্যাটেলাইট-১, কাগজবিহীন অফিস, আউটসোর্সিং এবং অনলাইন ব্যাংকিং** সংক্রান্ত গুরুত্বপূর্ণ প্রশ্নগুলো অন্তর্ভুক্ত করেছি। ২০ মিনিটের সময়সীমা শিক্ষার্থীদের দ্রুত সিদ্ধান্ত নেওয়ার ক্ষমতা বাড়াতে সাহায্য করবে।
+
+আশা করি এই কুইজটি সপ্তম শ্রেণির শিক্ষার্থীদের জন্য অত্যন্ত ফলপ্রসূ হবে। আপনার আরও কোনো পরিবর্তন প্রয়োজন হলে জানাবেন!
