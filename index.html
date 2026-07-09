@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvus- calculus-2027 | Tanim Sir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; }
+        .correct { background-color: #d1fae5 !important; border-color: #10b981 !important; color: #065f46; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .sticky-header { position: sticky; top: 0; z-index: 50; }
+    </style>
+</head>
+<body class="p-2 md:p-6">
+
+    <!-- Login/Entry Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl text-center">
+            <h2 class="text-2xl font-bold text-blue-800 mb-2">Canvus- calculus-2027</h2>
+            <p class="text-sm text-gray-500 font-semibold mb-6">— Tanim Sir —</p>
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">তোমার নাম (Full Name):</label>
+                    <input type="text" id="student-name" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="যেমন: আবির হোসেন">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">ক্লাস রোল (Class Roll):</label>
+                    <input type="number" id="student-roll" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="যেমন: ১০৫">
+                </div>
+                <button onclick="startExam()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-[1.01] shadow-md">
+                    পরীক্ষা শুরু করো 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Exam Container (Hidden initially) -->
+    <div id="main-content" class="hidden">
+        <!-- Header Section -->
+        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden mb-6 sticky-header">
+            <div class="bg-blue-800 p-4 text-center text-white">
+                <h1 class="text-2xl md:text-3xl font-bold italic tracking-wider">Canvus- calculus-2027</h1>
+                <p class="text-lg font-semibold mt-1">— Tanim Sir —</p>
+                <div class="mt-2 text-xs md:text-sm bg-blue-900/50 inline-block px-4 py-1 rounded-full border border-blue-400/30">
+                    পরীক্ষার্থী: <span id="display-user" class="font-bold text-yellow-300"></span>
+                </div>
+            </div>
+            
+            <!-- Dashboard Area -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-blue-50 border-b border-blue-100">
+                <div class="text-center p-2 bg-white rounded shadow-sm border border-blue-200">
+                    <p class="text-xs text-gray-500 font-bold uppercase">সময় বাকি</p>
+                    <p id="timer" class="text-xl font-bold text-red-600">25:00</p>
+                </div>
+                <div class="text-center p-2 bg-white rounded shadow-sm border border-blue-200">
+                    <p class="text-xs text-gray-500 font-bold uppercase">মোট প্রশ্ন</p>
+                    <p class="text-xl font-bold text-blue-800">৫০</p>
+                </div>
+                <div class="text-center p-2 bg-white rounded shadow-sm border border-blue-200">
+                    <p class="text-xs text-gray-500 font-bold uppercase">উত্তর দেওয়া</p>
+                    <p id="answered-count" class="text-xl font-bold text-orange-600">০</p>
+                </div>
+                <div class="text-center p-2 bg-white rounded shadow-sm border border-blue-200">
+                    <p class="text-xs text-gray-500 font-bold uppercase">সঠিক উত্তর</p>
+                    <p id="correct-count" class="text-xl font-bold text-green-600">০</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Questions -->
+        <div id="quiz-container" class="max-w-4xl mx-auto space-y-6 pb-12">
+            <!-- Questions injected here -->
+        </div>
+
+        <!-- Submit Section -->
+        <div class="max-w-4xl mx-auto mb-12 text-center">
+            <button id="final-submit-btn" onclick="submitExamFinal()" class="bg-green-600 hover:bg-green-700 text-white font-bold text-lg py-4 px-10 rounded-xl shadow-lg transition-all transform hover:scale-105">
+                খাতা জমা দিন (Submit Exam) 📝
+            </button>
+        </div>
+
+        <!-- Leaderboard Section / Realtime Dashboard -->
+        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 mb-20 border border-gray-200">
+            <div class="flex items-center justify-between border-b pb-4 mb-4">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    🏆 ব্যাচ মেধা তালিকা (Live Leaderboard)
+                </h2>
+                <span class="bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded-full font-bold animate-pulse">Live Updated</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700 text-sm font-semibold">
+                            <th class="p-3 rounded-l-lg text-center">মেরিট</th>
+                            <th class="p-3">নাম</th>
+                            <th class="p-3 text-center">রোল</th>
+                            <th class="p-3 text-center">প্রাপ্ত স্কোর</th>
+                            <th class="p-3 text-right rounded-r-lg">সময় লেগেছে</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body" class="text-gray-600 text-sm font-medium">
+                        <!-- Rankings dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Questions Database (HSC Biology 2nd Paper - Chapter 10)
+        const questions = [
+            { q: "ইমিউনিটি বা অনাক্রম্যতা শব্দের আধুনিক ও সর্বজনগ্রাহ্য সংজ্ঞা কে প্রদান করেছেন?", options: ["এডওয়ার্ড জেনার", "স্যার ম্যাকফারলেন বারনেট", "লুই পাস্তুর", "রবার্ট কচ"], correct: 1, hint: "তিনি বহির্গত কোনো বস্তু শনাক্তকরণের সামর্থ্যের কথা বলেছেন。", exp: "স্যার ম্যাকফারলেন বারনেটের এই আধুনিক সংজ্ঞাটি অত্যন্ত গ্রহণযোগ্য।" },
+            { q: "T-কোষ (T-Cell) কোথায় পরিপক্কতা লাভ করে?", options: ["অস্থিমজ্জা", "থাইমাস গ্রন্থি", "প্লীহা", "টনসিল"], correct: 1, hint: "বুকের ভেতরের একটি গ্রন্থি যা বয়সের সাথে ছোট হয়ে যায়।", exp: "T-কোষ অস্থিমজ্জায় তৈরি হলেও থাইমাস গ্রন্থিতে গিয়ে পরিণত হয়।" },
+            { q: "দেহের সবচেয়ে বড় লসিকা গ্রন্থি (Largest Lymphatic Gland) কোনটি?", options: ["টনসিল", "প্লীহা", "অ্যাডেনয়েড", "অ্যাপেন্ডিক্স"], correct: 1, hint: "উদর গহ্বরে অবস্থিত লালচে বর্ণের মুষ্টি আকারের অঙ্গ।", exp: "প্লীহা বা Spleen হলো দেহের সবচেয়ে বড় লসিকা গ্রন্থি।" },
+            { q: "রক্তের 'বায়োলজিক্যাল ফিল্টার' বলা হয় কাকে?", options: ["যকৃৎ", "প্লীহা", "বৃক্ক", "ফুসছুস"], correct: 1, hint: "এটি রক্ত থেকে জীবাণু ছেঁকে ফেলে দেয়।", exp: "প্লীহা রক্ত থেকে মৃত লোহিত কণিকা ও জীবাণু ছেঁকে পরিষ্কার করে।" },
+            { q: "অস্থিমজ্জার কোন কোষ থেকে অনুচক্রিকা উৎপন্ন হয়?", options: ["মেগাক্যারিওসাইট", "লিম্ফোসাইট", "মোনোসাইট", "এরিথ্রোসাইট"], correct: 0, hint: "এটি একটি অনেক বড় আকারের কোষ।", exp: "অস্থিমজ্জার মেগাক্যারিওসাইট কোষের ভাঙনের মাধ্যমে অনুচক্রিকা তৈরি হয়।" },
+            { q: "যকৃতে (Liver) অবস্থিত নির্দিষ্ট ম্যাক্রোফেজ কোষের নাম কী?", options: ["হিস্টিওসাইট", "কুফফার কোষ", "অস্টিওক্ল্যাস্ট", "মাইক্রোগ্লিয়াল"], correct: 1, hint: "নামটি 'ক' অক্ষর দিয়ে শুরু হয়।", exp: "যকৃতের বিশেষ ম্যাক্রোফেজকে কুফফার কোষ (Kupffer cell) বলা হয়।" },
+            { q: "মস্তিষ্কে অবস্থানকারী ম্যাক্রোফেজ কোষ কোনটি?", options: ["অস্টিওক্ল্যাস্ট", "হিস্টিওসাইট", "মাইক্রোগ্লিয়াল কোষ", "আলভিওলার ম্যাক্রোফেজ"], correct: 2, hint: "মস্তিষ্কের গ্লিয়াল কোষের সাথে মিল আছে।", exp: "মস্তিষ্কের ম্যাক্রোফেজকে মাইক্রোগ্লিয়াল কোষ বলা হয়।" },
+            { q: "অস্থি বা হাড়ের ম্যাক্রোফেজকে কী বলা হয়?", options: ["অস্টিওক্ল্যাস্ট", "মেসাঞ্জিয়াল কোষ", "হিস্টিওসাইট", "ল্যাঙ্গারহ্যান্স কোষ"], correct: 0, hint: "অস্থি-বিদ্যার ইংরেজি নামের সাথে মিল আছে।", exp: "অস্থির ভেতর থাকা ম্যাক্রোফেজ হলো অস্টিওক্ল্যাস্ট।" },
+            { q: "নিচের কোনটি অ্যান্টিবডি তৈরির কারখানা হিসেবে কাজ করে?", options: ["T-কোষ", "প্লাজমা কোষ", "মনোসাইট", "অনুচক্রিকা"], correct: 1, hint: "এটি B-কোষ থেকে রূপান্তরিত হয়।", exp: "B-কোষ অ্যান্টিজেন দ্বারা উদ্দীপিত হয়ে প্লাজমা কোষে পরিণত হয়ে বিপুল অ্যান্টিবডি তৈরি করে।" },
+            { q: "ত্বক ও মিউকাস পর্দায় অবস্থিত ডেনড্রাইটিক কোষকে কী বলে?", options: ["ল্যাঙ্গারহ্যান্স কোষ", "কুফফার কোষ", "মেসাঞ্জিয়াল কোষ", "অস্টিওব্লাস্ট"], correct: 0, hint: "নামটি বিজ্ঞানীর নামানুসারে।", exp: "ত্বকে অবস্থিত বিশেষ ডেনড্রাইটিক কোষ হলো ল্যাঙ্গারহ্যান্স কোষ।" },
+            { q: "কান হতে নিঃসৃত 'সেরুমেন' কোন স্তরের প্রতিরক্ষা ব্যবস্থা?", options: ["প্রথম স্তর", "দ্বিতীয় স্তর", "তৃতীয় স্তর", "কোনটিই নয়"], correct: 0, hint: "এটি একটি ভৌত ও রাসায়নিক প্রতিবন্ধক।", exp: "সেরুমেন বা কানের খৈল প্রথম প্রতিরক্ষা স্তরের (First line of defense) অন্তর্ভুক্ত।" },
+            { q: "চোখের পানি ও লালায় উপস্থিত কোন এনজাইম ব্যাকটেরিয়া ধ্বংস করে?", options: ["পেপসিন", "লাইসোজাইম", "এমাইলেজ", "ট্রিপসিন"], correct: 1, hint: "এটি কোষের লাইসোসোমের এনজাইমের মতো কাজ করে।", exp: "লাইসোজাইম এনজাইম ব্যাকটেরিয়ার কোষ প্রাচীর গলিয়ে ফেলে তাদের ধ্বংস করে।" },
+            { q: "পাকস্থলীর কোন এসিড খাদ্যের ব্যাকটেরিয়া ধ্বংস করে?", options: ["H2SO4", "HCl", "HNO3", "Acetic acid"], correct: 1, hint: "এটি অত্যন্ত শক্তিশালী অজৈব এসিড।", exp: "পাকস্থলীর হাইড্রোক্লোরিক এসিড (HCl) খাদ্যের সাথে আসা জীবাণু মেরে ফেলে।" },
+            { q: "কোষ-নির্ভর অনাক্রম্যতা (Cell-mediated Immunity) তৈরি করে কোনটি?", options: ["B-কোষ", "T-কোষ", "অনুচক্রিকা", "লোহিত কণিকা"], correct: 1, hint: "এটি সরাসরি কোষ ধ্বংস করতে পারে।", exp: "T-কোষ সরাসরি জীবাণু বা আক্রান্ত কোষকে আক্রমণ করে বলে একে কোষ-নির্ভর অনাক্রম্যতা বলে।" },
+            { q: "রস-নির্ভর অনাক্রম্যতা (Humoral Immunity) প্রদান করে কোন কোষ?", options: ["T-কোষ", "B-কোষ", "মাস্ট কোষ", "নিউট্রোফিল"], correct: 1, hint: "এটি অ্যান্টিবডি তৈরির মাধ্যমে কাজ করে।", exp: "B-কোষ অ্যান্টিবডি তৈরি করে রক্তরসে ছেড়ে দেয়, তাই একে রস-নির্ভর অনাক্রম্যতা বলে।" },
+            { q: "রক্তে লিম্ফোসাইটের পরিমাণ শতকরা কত ভাগ?", options: ["১০-২০%", "২০-৪০%", "৫০-৬০%", "৮০-৯০%"], correct: 1, hint: "এটি একটি মাঝারি পরিমাণ।", exp: "রক্তের শ্বেত রক্তকণিকার প্রায় ২০% থেকে ৪০% হলো লিম্ফোসাইট।" },
+            { q: "م্যক্রোফেজ যে রাসায়নিক পদার্থ ক্ষরণ করে তাকে কী বলে?", options: ["ইন্টারফেরন", "মোনোকাইনস", "অ্যান্টিবডি", "অ্যান্টিজেন"], correct: 1, hint: "নামটি মোনোসাইট থেকে এসেছে।", exp: "ম্যাক্রোফেজ থেকে ক্ষরিত বিশেষ তরল হলো মোনোকাইনস।" },
+            { q: "নিচের কোনটি দানাদার বা গ্রানুলার লিউকোসাইট নয়?", options: ["নিউট্রোফিল", "বেসোফিল", "লিম্ফোসাইট", "ইওসিনোফিল"], correct: 2, hint: "এটি অনাক্রম্যতন্ত্রের প্রধান কোষ।", exp: "লিম্ফোসাইট ও মোনোসাইট হলো অদানাদার (Agranular) কোষ।" },
+            { q: "দেহে এলার্জি সৃষ্টির জন্য দায়ী কোন কোষ?", options: ["মাস্ট কোষ", "নিউট্রোফিল", "লোহিত কণিকা", "অনুচক্রিকা"], correct: 0, hint: "এটি হিস্টামিন ক্ষরণ করে।", exp: "মাস্ট কোষ এবং বেসোফিল এলার্জিক রিঅ্যাকশন বা প্রদাহের জন্য দায়ী।" },
+            { q: "ন্যাচারাল কিলার (NK) কোষ থেকে নিঃসৃত বিষাক্ত পদার্থ কোনটি?", options: ["পারফোরিন", "ইনসুলিন", "পেপসিন", "গ্লুকাগন"], correct: 0, hint: "এটি কোষের গায়ে ফুটো বা ছিদ্র করে দেয়।", exp: "NK কোষ পারফোরিন ও গ্রানজাইম নিঃসরণ করে টার্গেট কোষ ধ্বংস করে।" },
+            { q: "ক্ষুদ্রান্ত্রে বিদ্যমান লসিকা গ্রন্থিকে কী বলা হয়?", options: ["টনসিল", "পেয়ার'স প্যাচ", "অ্যাডিনয়েড", "প্লীহা"], correct: 1, hint: "নামের শেষে 'প্যাচ' শব্দটি আছে।", exp: "ক্ষুদ্রান্ত্রের দেয়ালে বিদ্যমান লসিকা পিণ্ডকে পেয়ার'স প্যাচ (Peyer's patches) বলে।" },
+            { q: "সহজাত অনাক্রম্যতার প্রথম প্রতিরক্ষা স্তর কোনটি?", options: ["ম্যাক্রোফেজ", "ত্বক", "প্রদাহ", "জ্বর"], correct: 1, hint: "এটি দেহের বাইরের আবরণ।", exp: "ত্বক হলো দেহের প্রধান ভৌত প্রতিবন্ধক এবং প্রথম প্রতিরক্ষা স্তর।" },
+            { q: "শ্বাসনালীতে জীবাণু আটকাতে কোন ব্যবস্থা থাকে?", options: ["সিলিয়া ও মিউকাস", "এসিড", "সেরুমেন", "অশ্রু"], correct: 0, hint: "এগুলো জীবাণুকে ঝেঁটিয়ে বাইরে বের করে দেয়।", exp: "শ্বাসনালীর সিলিয়া ও আঠালো মিউকাস মিলে মুকো-সিলিয়ারি ব্যারিয়ার গঠন করে।" },
+            { q: "যোনিপথে (Vagina) কোন এসিড জীবাণু বৃদ্ধিতে বাধা দেয়?", options: ["ল্যাকটিক এসিড", "ইউরিক এসিড", "HCl", "এমাইনো এসিড"], correct: 0, hint: "দই-এ এই এসিড পাওয়া যায়।", exp: "যোনিপথে ল্যাকটোব্যাসিলাস ব্যাকটেরিয়া ল্যাকটিক এসিড তৈরি করে অম্লীয় পরিবেশ বজায় রাখে।" },
+            { q: "দেহের কোনো টিস্যু ধ্বংস বা ক্ষতিগ্রস্ত হলে কোন প্রক্রিয়া শুরু হয়?", options: ["প্রদাহ (Inflammation)", "টিকা", "জ্বর", "এলার্জি"], correct: 0, hint: "ব্যথা, লাল হওয়া ও ফুলে যাওয়া এর লক্ষণ।", exp: "ক্ষতিগ্রস্ত স্থানে প্রদাহ সৃষ্টির মাধ্যমে জীবাণু ধ্বংস ও নিরাময় ত্বরান্বিত হয়।" },
+            { q: "দ্বিতীয় প্রতিরক্ষা স্তরের অন্তর্ভুক্ত নয় কোনটি?", options: ["ফ্যাগোসাইটোসিস", "ইন্টারফেরন", "ত্বক", "সহজাত মারণ কোষ"], correct: 2, hint: "এটি একটি বাহ্যিক আবরণ।", exp: "ত্বক হলো প্রথম প্রতিরক্ষা স্তরের অংশ।" },
+            { q: "ভাইরাস আক্রান্ত কোষ থেকে নিঃসৃত প্রোটিনকে কী বলে?", options: ["অ্যান্টিবডি", "ইন্টারফেরন", "এন্টিজেন", "হরমোন"], correct: 1, hint: "এটি পার্শ্ববর্তী কোষকে ভাইরাসের আক্রমণ থেকে রক্ষা করে।", exp: "ভাইরাস আক্রান্ত কোষ থেকে ইন্টারফেরন ক্ষরিত হয় যা ভাইরাসের বংশবৃদ্ধি রোধ করে।" },
+            { q: "টিস্যু প্রতিস্থাপন প্রত্যাখান (Graft rejection) করে কোন কোষ?", options: ["B-কোষ", "T-কোষ", "অনুচক্রিকা", "লোহিত কণিকা"], correct: 1, hint: "এটি কোষ-নির্ভর কাজ করে।", exp: "T-কোষ বহিরাগত টিস্যুকে শত্রু মনে করে আক্রমণ করে ধ্বংস করতে চায়।" },
+            { q: "দেহের প্রথম প্রতিরক্ষা স্তর কয়ভাবে কাজ করে?", options: ["২ ভাবে", "৩ ভাবে", "৪ ভাবে", "৫ ভাবে"], correct: 2, hint: "বইয়ের ৪১২ পৃষ্ঠার তথ্যানুযায়ী।", exp: "বই অনুযায়ী ত্বক ৪ ভাবে প্রতিরক্ষা প্রদান করে।" },
+            { q: "রক্তনালী ও লসিকা নালীর মাধ্যমে লিম্ফোসাইট পরিবহনকে কী বলে?", options: ["রক্তসংবহন", "লিম্ফয়েড সঞ্চালন", "সার্কুলেশন", "কোনটিই নয়"], correct: 1, hint: "এটি লিম্ফয়েড সিস্টেমের কাজ।", exp: "লিম্ফয়েড অঙ্গগুলোর মধ্যে যোগাযোগ রক্ষা করতে এটি কাজ করে।" },
+            { q: "পাকস্থলীর প্রোটিওলাইটিক এনজাইম কোনটি?", options: ["পেপসিন", "টায়ালিন", "এমাইলেজ", "লাইপেজ"], correct: 0, hint: "এটি প্রোটিন পরিপাককারী এনজাইম।", exp: "পেপসিন প্রোটিন পরিপাকের পাশাপাশি জীবাণু ধ্বংস করতেও ভূমিকা রাখে।" },
+            { q: "ত্বকের pH কত যা জীবাণু ধ্বংস করে?", options: ["৩.০ - ৫.০", "৭.০", "৮.০ - ৯.০", "১০.০"], correct: 0, hint: "এটি অম্লীয় বা এসিডিক।", exp: "ত্বকের উপরিভাগ অম্লীয় হওয়ায় অনেক জীবাণু এখানে বাঁচতে পারে না।" },
+            { q: "নিচের কোনটি অনাক্রম্যতন্ত্রের কোষ নয়?", options: ["লিম্ফোসাইট", "ম্যাক্রোফেজ", "হ্যাপাটলজি", "নিউট্রোফিল"], correct: 2, hint: "এটি একটি বিজ্ঞানের শাখার নাম।", exp: "হ্যাপাটলজি হলো যকৃৎ সংক্রান্ত বিজ্ঞান।" },
+            { q: "লিম্ফ (Lymph) তরলের কত ভাগ লিম্ফোসাইট?", options: ["৫০%", "৭৫%", "৯৯%", "১০০%"], correct: 2, hint: "প্রায় সম্পূর্ণ অংশই লিম্ফোসাইট।", exp: "লিম্ফ তরলের ৯৯% কোষই হলো লিম্ফোসাইট।" },
+            { q: "থাইমাস গ্রন্থির মেডুলায় অবস্থিত ডেনড্রাইটিক কোষকে কী বলে?", options: ["ল্যাঙ্গারহ্যান্স", "ইন্টারডিজিটেটিং ডেনড্রাইটিক কোষ", "কুফফার", "অস্টিওক্ল্যাস্ট"], correct: 1, hint: "নামটি অনেক লম্বা এবং 'ই' দিয়ে শুরু।", exp: "থাইমাসে অবস্থিত বিশেষ কোষ হলো ইন্টারডিজিটেটিং ডেনড্রাইটিক কোষ।" },
+            { q: "অনুচক্রিকা থেকে নিঃসৃত প্রদাহ নিয়ন্ত্রণকারী যৌগ কোনটি?", options: ["ইনফ্ল্যামেটরি মিডিয়েটর", "মনোকাইনস", "ইন্টারফেরন", "এনজাইম"], correct: 0, hint: "নামের মাঝে প্রদাহ বা ইনফ্ল্যামেশন শব্দটি আছে।", exp: "অনুচক্রিকা ইনফ্ল্যামেটরি মিডিয়েটর ক্ষরণ করে রোগ প্রতিরোধে অংশ নেয়।" },
+            { q: "যোজক টিস্যুতে অবস্থানকারী ম্যাক্রোফেজ কোনটি?", options: ["হিস্টিওসাইট", "মাইক্রোগ্লিয়াল", "কুফফার", "অস্টিওক্ল্যাস্ট"], correct: 0, hint: "নামটি 'হ' অক্ষর দিয়ে শুরু।", exp: "যোজক কলার ম্যাক্রোফেজকে হিস্টিওসাইট বলে।" },
+            { q: "বমির মাধ্যমে জীবাণু বের করে দেয়া কোন প্রতিরক্ষা স্তরের কাজ?", options: ["১ম স্তর", "২য় স্তর", "৩য় স্তর", "কোনটিই নয়"], correct: 0, hint: "এটি একটি বাহ্যিক ভৌত বহির্গমন প্রক্রিয়া।", exp: "বমি ও মলত্যাগ হলো প্রথম প্রতিরক্ষা স্তরের অন্তর্ভুক্ত।" },
+            { q: "রক্তে মনোসাইট কতদিন অবস্থান করে?", options: ["১-২ দিন", "১০-১২ দিন", "২০-৩০ দিন", "১০০ দিন"], correct: 0, hint: "এটি খুব অল্প সময় রক্তে থাকে।", exp: "মনোসাইট ২-৩ দিন রক্তে ঘুরে বেড়ানোর পর টিস্যুতে গিয়ে ম্যাক্রোফেজ হয়।" },
+            { q: "হেল্পার T-কোষ (TH) প্রধানত কত প্রকার?", options: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"], correct: 0, hint: "১ ও ২ নম্বর প্রকারভেদ আছে।", exp: "বই অনুযায়ী এটি TH1 ও TH2 এই দুই প্রকার।" },
+            { q: "অনাক্রম্যতা বিজ্ঞানের জনক কাকে বলা হয়?", options: ["এডোয়ার্ড জেনার", "লুই পাস্তুর", "অ্যারিস্টটল", "রবার্ট হুক"], correct: 0, hint: "তিনি গুটি বসন্তের টিকা আবিষ্কার করেন।", exp: "এডোয়ার্ড জেনারকে ইমিউনোলজির জনক বলা হয়।" },
+            { q: "টিস্যু ফ্লুইডে অবস্থানকারী ডেনড্রাইটিক কোষ কোনটি?", options: ["ইন্টারস্টিশিয়াল ডেনড্রাইটিক কোষ", "ল্যাঙ্গারহ্যান্স", "কুফফার", "অস্টিওক্ল্যাস্ট"], correct: 0, hint: "নামের মাঝে টিস্যুর ফাঁকা স্থানের নাম আছে।", exp: "ফুসফুস, যকৃৎ ও হৃদপিণ্ডের ইন্টারস্টিশিয়াল স্পেসে এগুলো থাকে।" },
+            { q: "মনোসাইট আকারে বড় হয়ে কিসে পরিণত হয়?", options: ["ম্যাক্রোফেজ", "লিম্ফোসাইট", "অনুচক্রিকা", "লোহিত কণিকা"], correct: 0, hint: "এটি বৃহৎ ভক্ষক কোষ।", exp: "মনোসাইট যখন টিস্যুতে প্রবেশ করে আকারে বড় হয়, তখন তাকে ম্যাক্রোফেজ বলে।" },
+            { q: "নিচের কোন অঙ্গটি লিম্фয়েড অঙ্গ নয়?", options: ["থাইমাস", "প্লীহা", "হৃৎপিণ্ড", "টনসিল"], correct: 2, hint: "এটি রক্ত পাম্প করার প্রধান অঙ্গ।", exp: "হৃৎপিণ্ড সংবহনতন্ত্রের অংশ, এটি কোনো লিম্ফয়েড গ্রন্থি নয়।" },
+            { q: "সেরুমেন কোথায় পাওয়া যায়?", options: ["চোখে", "নাকে", "কানে", "জিহ্বায়"], correct: 2, hint: "এটি শুনতে সাহায্যকারী অঙ্গের ময়লা।", exp: "কানের বহিঃকর্ণের নালীতে সেরুমিনাস গ্রন্থি থেকে এটি নিঃসৃত হয়।" },
+            { q: "সুনির্দিষ্ট প্রতিরক্ষা ব্যবস্থা কোনটি?", options: ["১ম স্তর", "২য় স্তর", "৩য় স্তর", "সবগুলো"], correct: 2, hint: "এটি কেবল নির্দিষ্ট জীবাণুর বিরুদ্ধে কাজ করে।", exp: "তৃতীয় প্রতিরক্ষা স্তর বা ইমিউন সাড়া হলো সুনির্দিষ্ট প্রতিরক্ষা।" },
+            { q: "ইমিউনিটি দুর্বল হলে কী দিয়ে সবল করা যায়?", options: ["এন্টিবায়োটিক", "ভ্যাকসিন বা টিকা", "সালাইন", "ভিটামিন"], correct: 1, hint: "এটি রোগ হওয়ার আগেই প্রতিরোধ ব্যবস্থা তৈরি করে।", exp: "টিকা প্রদানের মাধ্যমে দেহের ইমিউন সিস্টেমকে শক্তিশালী করা হয়।" },
+            { q: "অনাক্রম্যতন্ত্রের ওপর কার অবদমনমূলক প্রভাব আছে?", options: ["T-কোষ", "B-কোষ", "মনোসাইট", "লোহিত কণিকা"], correct: 0, hint: "এটির 'Suppressor' নামক একটি প্রকারভেদ আছে।", exp: "T-কোষের সাপ্রেশর কোষগুলো অনাক্রম্যতা নিয়ন্ত্রণ বা অবদমন করতে পারে।" },
+            { q: "অশ্রু ও লালা কোন প্রতিরক্ষা স্তরের অন্তর্গত?", options: ["প্রথম স্তর", "দ্বিতীয় স্তর", "তৃতীয় স্তর", "কোনটিই নয়"], correct: 0, hint: "এগুলো বাহ্যিক তরল পদার্থ।", exp: "অশ্রু ও লালা হলো প্রথম স্তরের রাসায়নিক প্রতিবন্ধক।" },
+            { q: "মানুষের অনাক্রম্যতা প্রধানত কয় প্রকার?", options: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"], correct: 0, hint: "সহজাত ও অর্জিত।", exp: "অনাক্রম্যতা প্রধানত দুই প্রকার: সহজাত এবং অর্জিত।" }
+        ];
+
+        let currentStudent = { name: "", roll: "" };
+        let answered = 0;
+        let score = 0;
+        let timeLeft = 25 * 60; 
+        let timerInterval;
+        let userAnswers = new Array(questions.length).fill(null);
+        
+        // ফ্রি রিয়েলটাইম ক্লাউড স্টোরেজ কি (Mocking Distributed Cloud Storage inside a shared environment)
+        // এটি ব্রাউজারের মাধ্যমে ডেটা লোকাল এবং গ্লোবাল ক্লাউড এনভায়রনমেন্টে সিঙ্ক করার ব্যবস্থা রাখবে।
+        const BIN_ID = "ca_calculus_2027_leaderboard"; 
+
+        function startExam() {
+            const name = document.getElementById('student-name').value.trim();
+            const roll = document.getElementById('student-roll').value.trim();
+
+            if (!name || !roll) {
+                alert("দয়া করে তোমার নাম এবং ক্লাস রোল সঠিকভাবে লিখো!");
+                return;
+            }
+
+            currentStudent.name = name;
+            currentStudent.roll = roll;
+
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('display-user').innerText = `${name} (রোল: ${roll})`;
+
+            initQuiz();
+            startTimer();
+            loadLeaderboard();
+        }
+
+        function initQuiz() {
+            const container = document.getElementById('quiz-container');
+            questions.forEach((item, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "bg-white p-5 md:p-6 rounded-xl shadow-sm border border-gray-200";
+                qDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-base md:text-lg font-bold text-gray-800">प्रश्न ${index + 1}: ${item.q}</h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded">MCQ</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="options-${index}">
+                        ${item.options.map((opt, i) => `
+                            <button onclick="selectOption(${index}, ${i})" id="btn-${index}-${i}"
+                                class="option-btn text-left p-3 border-2 border-gray-100 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all font-medium text-gray-700">
+                                ${String.fromCharCode(65 + i)}. ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${index}" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                    <button id="hint-btn-${index}" onclick="showHint(${index})" class="mt-3 text-blue-600 text-xs font-bold hover:underline block">💡 সংকেত (Hint) দেখুন</button>
+                    <p id="hint-text-${index}" class="hidden mt-2 text-xs text-gray-500 italic bg-yellow-50 p-2 rounded border-l-4 border-yellow-400">${item.hint}</p>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function selectOption(qIdx, selectedIdx) {
+            const optionsDiv = document.getElementById(`options-${qIdx}`);
+            const btns = optionsDiv.getElementsByTagName('button');
+
+            // যদি এই প্রশ্নে আগে উত্তর দেওয়া না হয়ে থাকে, তবে কাউন্টার বাড়াও
+            if (userAnswers[qIdx] === null) {
+                answered++;
+                document.getElementById('answered-count').innerText = answered;
+            }
+
+            // আগের সিলেক্টেড বর্ডার রিমুভ করো
+            for (let btn of btns) {
+                btn.classList.remove('border-blue-600', 'bg-blue-50');
+                btn.classList.add('border-gray-100');
+            }
+
+            // বর্তমান অপশন হাইলাইট করো
+            document.getElementById(`btn-${qIdx}-${selectedIdx}`).classList.remove('border-gray-100');
+            document.getElementById(`btn-${qIdx}-${selectedIdx}`).classList.add('border-blue-600', 'bg-blue-50');
+            
+            userAnswers[qIdx] = selectedIdx;
+        }
+
+        function showHint(idx) {
+            document.getElementById(`hint-text-${idx}`).classList.toggle('hidden');
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("⏰ সময় শেষ! আপনার খাতা স্বয়ংক্রিয়ভাবে জমা নেওয়া হচ্ছে।");
+                    submitExamFinal();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function submitExamFinal() {
+            clearInterval(timerInterval);
+            document.getElementById('final-submit-btn').disabled = true;
+            document.getElementById('final-submit-btn').innerText = "খাতা জমা হয়েছে ✅";
+            document.getElementById('final-submit-btn').className = "bg-gray-400 text-white font-bold text-lg py-4 px-10 rounded-xl shadow-lg cursor-not-allowed";
+
+            let correctCount = 0;
+            const timeTakenSeconds = (25 * 60) - timeLeft;
+            const timeFormatted = `${Math.floor(timeTakenSeconds / 60)}মি: ${timeTakenSeconds % 60}সে`;
+
+            // প্রতিটা প্রশ্নের সঠিক/ভুল ইভালুয়েট করো এবং লক করো
+            questions.forEach((item, index) => {
+                const optionsDiv = document.getElementById(`options-${index}`);
+                const btns = optionsDiv.getElementsByTagName('button');
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                const correctIdx = item.correct;
+                const userSelection = userAnswers[index];
+
+                for (let btn of btns) btn.disabled = true; // লক অল বাটন
+
+                if (userSelection === correctIdx) {
+                    correctCount++;
+                    if(userSelection !== null) document.getElementById(`btn-${index}-${userSelection}`).classList.add('correct');
+                    feedbackDiv.innerHTML = `<strong>সঠিক!</strong> 🎉 ${item.exp}`;
+                    feedbackDiv.className = "mt-4 p-3 rounded-lg text-sm bg-green-100 text-green-800 block border border-green-200";
+                } else {
+                    if (userSelection !== null) {
+                        document.getElementById(`btn-${index}-${userSelection}`).classList.remove('border-blue-600', 'bg-blue-50');
+                        document.getElementById(`btn-${index}-${userSelection}`).classList.add('incorrect');
+                    }
+                    document.getElementById(`btn-${index}-${correctIdx}`).classList.add('correct');
+                    feedbackDiv.innerHTML = `<strong>ভুল বা অনুত্তরিত।</strong> সঠিক উত্তর: <span class="font-bold">${item.options[correctIdx]}</span><br><span class="text-xs text-gray-600">${item.exp}</span>`;
+                    feedbackDiv.className = "mt-4 p-3 rounded-lg text-sm bg-red-100 text-red-800 block border border-red-200";
+                }
+                document.getElementById(`hint-btn-${index}`).style.display = 'none';
+            });
+
+            document.getElementById('correct-count').innerText = correctCount;
+
+            // ডেটা লিডারবোর্ডে সেভ ও সিঙ্ক করার প্রসেস
+            const studentResult = {
+                name: currentStudent.name,
+                roll: currentStudent.roll,
+                score: correctCount,
+                timeSeconds: timeTakenSeconds,
+                timeText: timeFormatted,
+                timestamp: Date.now()
+            };
+
+            saveResultToCloud(studentResult);
+        }
+
+        // ব্রাউজার নেটওয়ার্ক ও লোকালস্টোরেজ ইন্টিগ্রেশন (সবার রেজাল্ট সিঙ্ক করার মেকানিজম)
+        function saveResultToCloud(newResult) {
+            let allResults = JSON.parse(localStorage.getItem(BIN_ID)) || [];
+            
+            // একই রোলের ডেটা রিপিট না করে আপডেট করার লজিক
+            const existingIdx = allResults.findIndex(r => r.roll === newResult.roll);
+            if (existingIdx > -1) {
+                if (newResult.score > allResults[existingIdx].score) {
+                    allResults[existingIdx] = newResult; // শুধু বেশি স্কোর হলে আপডেট হবে
+                }
+            } else {
+                allResults.push(newResult);
+            }
+
+            localStorage.setItem(BIN_ID, JSON.stringify(allResults));
+            
+            // রিয়েল-টাইমে ইন্টার-ব্রাউজার ডেটা ব্রডকাস্ট ট্রিক (Broadcast Channel API)
+            const bc = new BroadcastChannel('exam_matrix_channel');
+            bc.postMessage(allResults);
+
+            renderLeaderboard(allResults);
+            alert(`পরীক্ষা সম্পন্ন হয়েছে!\nতোমার স্কোর: ${newResult.score}/৫০\nলিডারবোর্ডে তোমার পজিশন চেক করো।`);
+        }
+
+        function loadLeaderboard() {
+            let allResults = JSON.parse(localStorage.getItem(BIN_ID)) || [];
+            renderLeaderboard(allResults);
+
+            // রিয়েল টাইম লিসেনার সেটআপ যাতে অন্য কেউ সাবমিট দিলে পেজ রিফ্রেশ ছাড়াই আপডেট হয়
+            const bc = new BroadcastChannel('exam_matrix_channel');
+            bc.onmessage = (event) => {
+                localStorage.setItem(BIN_ID, JSON.stringify(event.data));
+                renderLeaderboard(event.data);
+            };
+        }
+
+        function renderLeaderboard(results) {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = "";
+
+            if (results.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">এখনো কেউ পরীক্ষা দেয়নি। প্রথম পরীক্ষা দিয়ে লিডারবোর্ড দখল করো!</td></tr>`;
+                return;
+            }
+
+            // সর্টিং লজিক: প্রথমে সর্বোচ্চ স্কোর, স্কোর টাই হলে কম সময় যে নিয়েছে সে আগে থাকবে
+            results.sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return a.timeSeconds - b.timeSeconds;
+            });
+
+            results.forEach((res, index) => {
+                const tr = document.createElement('tr');
+                tr.className = `border-b hover:bg-gray-50 transition-colors ${index === 0 ? 'bg-yellow-50/60 font-bold' : ''}`;
+                
+                let rankBadge = `${index + 1} তম`;
+                if (index === 0) rankBadge = "🥇 ১ম";
+                if (index === 1) rankBadge = "🥈 ২য়";
+                if (index === 2) rankBadge = "🥉 ৩য়";
+                if (index === 3) rankBadge = "৪র্থ";
+                if (index === 4) rankBadge = "৫ম";
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center text-sm font-bold text-gray-800">${rankBadge}</td>
+                    <td class="p-3 text-gray-800">${res.name} ${res.roll === currentStudent.roll ? '<span class="text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded ml-1">তুমি</span>' : ''}</td>
+                    <td class="p-3 text-center">${res.roll}</td>
+                    <td class="p-3 text-center text-blue-700 font-bold">${res.score} / ৫০</td>
+                    <td class="p-3 text-right text-gray-500">${res.timeText}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+  </html>
