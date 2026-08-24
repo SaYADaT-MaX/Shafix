@@ -1,0 +1,15 @@
+{
+  "name": "studyhub-bd-hsc2027",
+  "version": "1.0.0",
+  "description": "StudyHub BD - HSC 2027 Assignment Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "better-sqlite3": "^11.8.1"
+  }
+}
