@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>StudyHub BD - HSC 2027</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    header {
+      background: white;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      position: sticky;
+      top: 0;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .logo span {
+      color: #2878ff;
+    }
+
+    nav button {
+      border: none;
+      background: none;
+      padding: 8px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .hero {
+      padding: 70px 25px;
+      text-align: center;
+      background: linear-gradient(135deg, #e9f2ff, white);
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      margin: 15px 0;
+    }
+
+    .hero p {
+      color: #2878ff;
+      font-weight: bold;
+    }
+
+    .hero .description {
+      color: #666;
+      font-size: 17px;
+      margin-bottom: 25px;
+    }
+
+    .button {
+      display: inline-block;
+      background: #2878ff;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 9px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .section {
+      max-width: 1100px;
+      margin: auto;
+      padding: 45px 20px;
+    }
+
+    .section h2 {
+      margin-bottom: 25px;
+    }
+
+    .assignments {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      border: 1px solid #e2e6ed;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .card .subject {
+      color: #2878ff;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .card h3 {
+      margin: 12px 0;
+    }
+
+    .card p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .login-box {
+      max-width: 450px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      border: 1px solid #ddd;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #d5dae2;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    footer {
+      background: #172033;
+      color: white;
+      text-align: center;
+      padding: 30px;
+      margin-top: 30px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media(max-width:600px) {
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      nav button {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <div class="logo">
+    StudyHub <span>BD</span>
+  </div>
+
+  <nav>
+    <button onclick="showHome()">Home</button>
+    <button onclick="showAssignments()">Assignments</button>
+    <button onclick="showLogin()">Login</button>
+  </nav>
+
+</header>
+
+
+<section class="hero">
+
+  <p>HSC 2027 • Science Group</p>
+
+  <h1>
+    পড়ি • Assignment দিই • একসাথে শিখি
+  </h1>
+
+  <div class="description">
+    Weekly Assignment নাও, নিজের Solution জমা দাও
+    এবং অন্যদের Solution দেখে শেখো।
+  </div>
+
+  <button class="button" onclick="showAssignments()">
+    Assignment দেখুন
+  </button>
+
+</section>
+
+
+<section class="section" id="home">
+
+  <h2>StudyHub BD কী?</h2>
+
+  <p>
+    এটি HSC 2027 শিক্ষার্থীদের জন্য একটি Assignment Community।
+    এখানে প্রতি সপ্তাহে বিভিন্ন বিষয়ের Assignment দেওয়া হবে।
+    শিক্ষার্থীরা নিজেদের Solution জমা দিতে পারবে এবং
+    অন্য শিক্ষার্থীদের Solution দেখে আলোচনা করতে পারবে।
+  </p>
+
+</section>
+
+
+<section class="section hidden" id="assignments">
+
+  <h2>এই সপ্তাহের Assignment</h2>
+
+  <div class="assignments">
+
+    <div class="card">
+
+      <div class="subject">
+        PHYSICS
+      </div>
+
+      <h3>
+        ভৌত জগৎ ও পরিমাপ
+      </h3>
+
+      <p>
+        ১০টি MCQ এবং ৩টি সৃজনশীল প্রশ্ন
+        সমাধান করো।
+      </p>
+
+      <button
+        class="button"
+        onclick="openAssignment('Physics')">
+        Assignment খুলুন
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="subject">
+        CHEMISTRY
+      </div>
+
+      <h3>
+        ল্যাবরেটরি নিরাপত্তা
+      </h3>
+
+      <p>
+        ল্যাবরেটরির ১০টি গুরুত্বপূর্ণ
+        নিরাপত্তা নিয়ম লিখো।
+      </p>
+
+      <button
+        class="button"
+        onclick="openAssignment('Chemistry')">
+        Assignment খুলুন
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="subject">
+        HIGHER MATH
+      </div>
+
+      <h3>
+        ম্যাট্রিক্স ও নির্ণায়ক
+      </h3>
+
+      <p>
+        নির্বাচিত ৫টি সমস্যা
+        ধাপে ধাপে সমাধান করো।
+      </p>
+
+      <button
+        class="button"
+        onclick="openAssignment('Higher Math')">
+        Assignment খুলুন
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="subject">
+        BIOLOGY
+      </div>
+
+      <h3>
+        কোষ
+      </h3>
+
+      <p>
+        কোষের গঠন নিয়ে একটি ছোট
+        নোট তৈরি করো।
+      </p>
+
+      <button
+        class="button"
+        onclick="openAssignment('Biology')">
+        Assignment খুলুন
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="section hidden" id="submit">
+
+  <h2 id="assignmentTitle">
+    Assignment
+  </h2>
+
+  <div class="card">
+
+    <p>
+      তোমার Solution এখানে লিখে Submit করো।
+    </p>
+
+    <textarea
+      id="answer"
+      placeholder="তোমার Solution লিখো...">
+    </textarea>
+
+    <button
+      class="button"
+      onclick="submitAssignment()">
+      Submit Solution
+    </button>
+
+    <p id="submitMessage"></p>
+
+  </div>
+
+</section>
+
+
+<section class="section hidden" id="login">
+
+  <div class="login-box">
+
+    <h2>Student Login</h2>
+
+    <input
+      type="text"
+      id="phone"
+      placeholder="মোবাইল নম্বর">
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Password">
+
+    <button
+      class="button"
+      onclick="login()">
+      Login
+    </button>
+
+    <p id="loginMessage"></p>
+
+  </div>
+
+</section>
+
+
+<footer>
+
+  <p>
+    © 2026 StudyHub BD
+  </p>
+
+  <p>
+    HSC 2027 Science Community
+  </p>
+
+</footer>
+
+
+<script>
+
+  let currentAssignment = "";
+
+  function hideAll() {
+
+    document
+      .getElementById("home")
+      .classList.add("hidden");
+
+    document
+      .getElementById("assignments")
+      .classList.add("hidden");
+
+    document
+      .getElementById("submit")
+      .classList.add("hidden");
+
+    document
+      .getElementById("login")
+      .classList.add("hidden");
+
+  }
+
+
+  function showHome() {
+
+    hideAll();
+
+    document
+      .getElementById("home")
+      .classList.remove("hidden");
+
+  }
+
+
+  function showAssignments() {
+
+    hideAll();
+
+    document
+      .getElementById("assignments")
+      .classList.remove("hidden");
+
+  }
+
+
+  function showLogin() {
+
+    hideAll();
+
+    document
+      .getElementById("login")
+      .classList.remove("hidden");
+
+  }
+
+
+  function openAssignment(subject) {
+
+    currentAssignment = subject;
+
+    hideAll();
+
+    document
+      .getElementById("submit")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("assignmentTitle")
+      .innerText =
+      subject + " Assignment";
+
+  }
+
+
+  function submitAssignment() {
+
+    let answer =
+      document.getElementById("answer").value;
+
+    if(answer.trim() === "") {
+
+      alert("আগে Solution লিখো!");
+
+      return;
+
+    }
+
+    document
+      .getElementById("submitMessage")
+      .innerText =
+      "✅ Demo হিসেবে Solution জমা হয়েছে!";
+
+  }
+
+
+  function login() {
+
+    let phone =
+      document.getElementById("phone").value;
+
+    let password =
+      document.getElementById("password").value;
+
+    if(phone === "" || password === "") {
+
+      alert("Phone এবং Password দাও!");
+
+      return;
+
+    }
+
+    document
+      .getElementById("loginMessage")
+      .innerText =
+      "✅ Demo Login সফল!";
+
+  }
+
+</script>
+
+</body>
+  </html>
